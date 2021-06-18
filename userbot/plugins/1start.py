@@ -15,7 +15,7 @@ from userbot.plugins.help import add_command_help
 async def alive(_, message: Message):
     txt = (
         f"**{UserBot.__class__.__name__}** ```RUNNING```\n"
-        f"-> Current Uptime: `{str(datetime.now() - START_TIME).split('.')[0]}`\n"
+        f"-> Test Current Uptime: `{str(datetime.now() - START_TIME).split('.')[0]}`\n"
         f"-> Python: `{python_version()}`\n"
         f"-> Pyrogram: `{__version__}`"
     )

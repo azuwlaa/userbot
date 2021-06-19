@@ -34,6 +34,5 @@ async def auto_unpin_list(_, message: Message):
 async def Auto_del_message(_, message: Message):
      if chat_auth == GetChatID(message):
         text = ".del"
-         await UserBot.send_message(chat_id=GetChatID(message),
+        await UserBot.send_message(chat_id=GetChatID(message),
                                    text=text, reply_to_message_id=message.message_id)
-                                   text=f"`clear`")

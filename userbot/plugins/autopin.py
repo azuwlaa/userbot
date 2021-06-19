@@ -30,7 +30,7 @@ async def auto_unpin_list(_, message: Message):
                                    text=text)
         
         
-@UserBot.on_message(filters.regex(r"(?i)There is no game(.*)$"))
+@UserBot.on_message(filters.regex(r"(?i)There is no game running. (.*)$"))
 async def auto_del_list(_, message: Message):
     
      if chat_auth == GetChatID(message):

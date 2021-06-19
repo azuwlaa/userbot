@@ -7,7 +7,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 from userbot.helpers.PyroHelpers import GetChatID
 
-chat_auth = -1001443655011
+chat_auth = ["-1001443655011", "-1001216487216"] 
 
 
 @UserBot.on_message(filters.regex(r"(?i)#players:(.*)$"))

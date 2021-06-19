@@ -24,6 +24,7 @@ async def auto_pin_list(_, message: Message):
 
 @UserBot.on_message(filters.regex(r"(?i)Game Length:(.*)$"))
 async def auto_unpin_list(_, message: Message):
+    
      if chat_auth == GetChatID(message):
         text = ".unpin"
         await UserBot.send_message(chat_id=GetChatID(message),
@@ -37,17 +38,19 @@ async def auto_del_list(_, message: Message):
         text = ".del"
 
         await UserBot.send_message(chat_id=GetChatID(message),
-                                   text=text, reply_to_message_id=message.message_
+                                   text=text, reply_to_message_id=message.message_id)
+        await UserBot.send_message(chat_id=GetChatID(message),
+                                   text=f"This is an auto-del.")
         
        
 @UserBot.on_message(filters.regex(r"(?i)Have fun!!!(.*)$"))
 async def auto_del_list(_, message: Message):
-    
      if chat_auth == GetChatID(message):
         text = ".del"
 
         await UserBot.send_message(chat_id=GetChatID(message),
                                    text=text, reply_to_message_id=message.message_id)
-
+        await UserBot.send_message(chat_id=GetChatID(message),
+                                   text=f"This is an auto-del.")
 
        

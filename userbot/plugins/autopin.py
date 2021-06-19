@@ -36,3 +36,4 @@ async def Auto_del_message(_, message: Message):
         text = ".del"
          await UserBot.send_message(chat_id=GetChatID(message),
                                    text=text, reply_to_message_id=message.message_id)
+                                   text=f"`clear`")

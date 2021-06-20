@@ -7,50 +7,51 @@ from pyrogram import filters
 from pyrogram.types import Message
 from userbot.helpers.PyroHelpers import GetChatID
 
-chat_auth = -1001443655011
+
+CHAT_AUTH = [-1001443655011]  # add chat ids without quotes
 
 
 @UserBot.on_message(filters.regex(r"(?i)#players:(.*)$"))
 async def auto_pin_list(_, message: Message):
-    
-     if chat_auth == GetChatID(message):
+    chat_id = GetChatID(message) 
+    if chat_id in CHAT_AUTH:
         text = ".pin loud"
 
-        await UserBot.send_message(chat_id=GetChatID(message),
+        await UserBot.send_message(chat_id=chat_id,
                                    text=text, reply_to_message_id=message.message_id)
         await UserBot.send_message(chat_id=GetChatID(message),
                                    text=f"This is an auto-pin.")
 
 
-@UserBot.on_message(filters.regex(r"(?i)Game Length:(.*)$"))
+@UserBot.on_message(filters.regex(r"(?i)Game Length:(.*)$") | filters.regex(r"(?i)Not enough players,(.*)$"))
 async def auto_unpin_list(_, message: Message):
+    chat_id = GetChatID(message)
     
-     if chat_auth == GetChatID(message):
+    if chat_id in CHAT_AUTH:
         text = ".unpin"
-        await UserBot.send_message(chat_id=GetChatID(message),
+        await UserBot.send_message(chat_id=chat_id,
                                    text=text)
-        
-        
+
+
 @UserBot.on_message(filters.regex(r"(?i)There is no game running. (.*)$"))
 async def auto_del_list(_, message: Message):
-    
-     if chat_auth == GetChatID(message):
+    chat_id = GetChatID(message)
+    if chat_id in CHAT_AUTH:
         text = ".del"
 
-        await UserBot.send_message(chat_id=GetChatID(message),
+        await UserBot.send_message(chat_id=chat_id,
                                    text=text, reply_to_message_id=message.message_id)
-        await UserBot.send_message(chat_id=GetChatID(message),
+        await UserBot.send_message(chat_id=chat_id,
                                    text=f"This is an auto-del.")
-        
-       
+
+
 @UserBot.on_message(filters.regex(r"(?i)Have fun!!!(.*)$"))
 async def auto_del_list(_, message: Message):
-     if chat_auth == GetChatID(message):
+    chat_id = GetChatID(message)
+    if chat_id in CHAT_AUTH:
         text = ".del"
 
-        await UserBot.send_message(chat_id=GetChatID(message),
-                                   text=text, reply_to_message_id=message.message_id)
-        await UserBot.send_message(chat_id=GetChatID(message),
-                                   text=f"This is an auto-del.")
-
-       
+    await UserBot.send_message(chat_id=chat_id,
+                               text=text, reply_to_message_id=message.message_id)
+    await UserBot.send_message(chat_id=chat_id,
+                               text=f"This is an auto-del.")

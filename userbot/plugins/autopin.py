@@ -19,10 +19,8 @@ async def auto_pin_list(_, message: Message):
 
         await UserBot.send_message(chat_id=chat_id,
                                    text=text, reply_to_message_id=message.message_id)
-        await UserBot.send_message(chat_id=GetChatID(message),
-                                   text=f"This is an auto-pin.")
-        await asyncio.sleep(3)
         await message.delete()
+        await asyncio.sleep(3)
 
 
 @UserBot.on_message(filters.regex(r"(?i)Game Length:(.*)$") | filters.regex(r"(?i)Not enough players,(.*)$"))
@@ -35,7 +33,7 @@ async def auto_unpin_list(_, message: Message):
                                    text=text)
 
 
-@UserBot.on_message(filters.regex(r"(?i)There is no game running. (.*)$"))
+@UserBot.on_message(filters.regex(r"(?i)There is no game running.(.*)$"))
 async def auto_del_list(_, message: Message):
     chat_id = GetChatID(message)
     if chat_id in CHAT_AUTH:

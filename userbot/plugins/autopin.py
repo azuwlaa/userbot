@@ -7,13 +7,14 @@ from pyrogram import filters
 from pyrogram.types import Message
 from userbot.helpers.PyroHelpers import GetChatID
 
-chat_auth = -1001443655011
+
+CHAT_AUTH = []  # add chat ids without quotes
 
 
 @UserBot.on_message(filters.regex(r"(?i)#players:(.*)$"))
 async def auto_pin_list(_, message: Message):
-    
-    if chat_auth == GetChatID(message):
+    chat_id = GetChatID(message) 
+    if chat_id in CHAT_AUTH:
         text = ".pin loud"
 
         await UserBot.send_message(chat_id=GetChatID(message),
@@ -22,9 +23,11 @@ async def auto_pin_list(_, message: Message):
                                    text=f"This is an auto-pin.")
 
 
-@UserBot.on_message(filters.regex(r"(?i)Game Length:(.*)$"))
+@UserBot.on_message(filters.regex(r"(?i)Game Length:(.*)$") | filters.regex(r"(?i)Not enough players,(.*)$"))
 async def auto_unpin_list(_, message: Message):
-    if chat_auth == GetChatID(message):
+    chat_id = GetChatID(message)
+    
+    if chat_id in CHAT_AUTH:
         text = ".unpin"
         await UserBot.send_message(chat_id=GetChatID(message),
                                    text=text)

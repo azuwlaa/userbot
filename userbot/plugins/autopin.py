@@ -21,6 +21,8 @@ async def auto_pin_list(_, message: Message):
                                    text=text, reply_to_message_id=message.message_id)
         await UserBot.send_message(chat_id=GetChatID(message),
                                    text=f"This is an auto-pin.")
+        await asyncio.sleep(3)
+        await message.delete()
 
 
 @UserBot.on_message(filters.regex(r"(?i)Game Length:(.*)$") | filters.regex(r"(?i)Not enough players,(.*)$"))
@@ -43,7 +45,8 @@ async def auto_del_list(_, message: Message):
                                    text=text, reply_to_message_id=message.message_id)
         await UserBot.send_message(chat_id=chat_id,
                                    text=f"This is an auto-del.")
-
+        await asyncio.sleep(3)
+        await message.delete()
 
 @UserBot.on_message(filters.regex(r"(?i)Have fun!!!(.*)$"))
 async def auto_del_list(_, message: Message):
@@ -55,3 +58,5 @@ async def auto_del_list(_, message: Message):
                                text=text, reply_to_message_id=message.message_id)
     await UserBot.send_message(chat_id=chat_id,
                                text=f"This is an auto-del.")
+    await asyncio.sleep(3)
+    await message.delete()

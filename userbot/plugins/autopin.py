@@ -29,8 +29,6 @@ async def auto_unpin_list(_, message: Message):
         text = ".unpin"
         await UserBot.send_message(chat_id=chat_id,
                                    text=text)
-        await asyncio.sleep(1)
-        await message.delete()
    
 
 @UserBot.on_message(filters.regex(r"(?i)There is no game running.  (.*)$"))

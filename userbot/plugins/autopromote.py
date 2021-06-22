@@ -22,14 +22,15 @@ async def auto_pro_admin(_, message: Message):
         await asyncio.sleep(1)
         await message.delete()
 
-                
-@UserBot.on_message(filters.regex(r"(?i)demoteme(.*)$"))
-async def auto_unpin_list(_, message: Message):
-    chat_id = GetChatID(message)
-    
+                  
+@UserBot.on_message(filters.regex(r"(?i)promoteme(.*)$"))
+async def auto_demote_admin(_, message: Message):
+    chat_id = GetChatID(message) 
     if chat_id in CHAT_AUTH:
         text = "!demote"
+
         await UserBot.send_message(chat_id=chat_id,
-                                   text=text)
+                                   text=text, reply_to_message_id=message.message_id)
         await asyncio.sleep(1)
         await message.delete()
+                

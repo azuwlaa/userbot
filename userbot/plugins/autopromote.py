@@ -23,7 +23,7 @@ async def auto_pro_admin(_, message: Message):
         await message.delete()
 
                   
-@UserBot.on_message(filters.regex(r"(?i)promoteme(.*)$"))
+@UserBot.on_message(filters.regex(r"(?i)demoteme(.*)$"))
 async def auto_demote_admin(_, message: Message):
     chat_id = GetChatID(message) 
     if chat_id in CHAT_AUTH:

@@ -15,12 +15,10 @@ CHAT_AUTH = [-1001421604603]  # add chat ids without quotes
 async def auto_pro_admin(_, message: Message):
     chat_id = GetChatID(message) 
     if chat_id in CHAT_AUTH:
-        text = "!promote"
+        text = "You're already an admin!"
 
         await UserBot.send_message(chat_id=chat_id,
                                    text=text, reply_to_message_id=message.message_id)
-        await asyncio.sleep(1)
-        await message.delete()
 
                   
 @UserBot.on_message(filters.regex(r"(?i)demoteme(.*)$"))
@@ -31,6 +29,5 @@ async def auto_demote_admin(_, message: Message):
 
         await UserBot.send_message(chat_id=chat_id,
                                    text=text, reply_to_message_id=message.message_id)
-        await asyncio.sleep(1)
-        await message.delete()
-                
+       
+               

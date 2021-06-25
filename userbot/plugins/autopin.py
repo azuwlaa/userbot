@@ -31,21 +31,6 @@ async def auto_unpin_list(_, message: Message):
                                    text=text)
    
 
-@UserBot.on_message(filters.regex(r"(?i)There is no game running.  (.*)$"))
-async def auto_del_list(_, message: Message):
-    chat_id = GetChatID(message)
-    if chat_id in CHAT_AUTH:
-        text = ".del"
+        
 
-        await UserBot.send_message(chat_id=chat_id,
-                                   text=text, reply_to_message_id=message.message_id)
-        
-        
-@UserBot.on_message(filters.regex(r"(?i)Have fun!!!(.*)$"))
-async def auto_del_list(_, message: Message):
-    chat_id = GetChatID(message)
-    if chat_id in CHAT_AUTH:
-        text = ".del"
-        await UserBot.send_message(chat_id=chat_id,
-                                   text=text, reply_to_message_id=message.message_id)
 

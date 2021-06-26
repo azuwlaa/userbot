@@ -12,7 +12,7 @@ async def add_contact(_, message: Message):
             )
         return
     else:
-        replied_user = UserBot.add_contact("username")
+        user_first = message.reply_to_message.from_user.first_name
 
         await message.edit(
                 "`UNBLOCKED!`"

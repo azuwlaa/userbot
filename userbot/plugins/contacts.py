@@ -8,7 +8,6 @@ from userbot.helpers.PyroHelpers import GetChatID
 
 @UserBot.on_message(filters.command("unblock", ".") & filters.me)
 async def un_block(_, message: Message):
-        if chat_id = GetChatID(message) 
             text = "`Unblocked!`"
 
             await UserBot.send_message(chat_id=chat_id,

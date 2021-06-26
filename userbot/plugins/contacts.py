@@ -1,9 +1,9 @@
 import asyncio
 
 from userbot import UserBot
-from userbot import User
 from pyrogram import filters
 from pyrogram.types import Message
+from userbot.helpers.PyroHelpers import GetChatID
 
 
 @UserBot.on_message(filters.command("unblock", ".") & filters.me)

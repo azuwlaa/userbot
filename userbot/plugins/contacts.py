@@ -5,10 +5,12 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 
+user_first = message.reply_to_message.from_user.first_name
+
+
 @UserBot.on_message(filters.command("unblock", ".") & filters.me)
 async def un_block(_, message: Message):
-    if message.reply_to_message.from_user.first_name
-        await add_contact("Unblocked" first_name) 
+        await add_contact(user_id, user_first)
         await message.edit(
                 "`UNBLOCKED!`"
             )

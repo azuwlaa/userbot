@@ -4,7 +4,7 @@ from userbot import UserBot
 from pyrogram import filters
 from pyrogram.types import Message
 
-@UserBot.add_contact(filters.command("unblock", ".") & filters.me)
+@UserBot.on_message(filters.command("unblock", ".") & filters.me)
 async def add_contact(_, message: Message):
     if message.reply_to_message is None:
         await message.edit(
@@ -12,7 +12,8 @@ async def add_contact(_, message: Message):
             )
         return
     else:
-        replied_user = message.reply_to_message.from_user
+        replied_user = UserBot.add_contact("username")
+
         await message.edit(
                 "`UNBLOCKED!`"
             )

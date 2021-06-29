@@ -22,3 +22,6 @@ svglib
 reportlab
 spotipy
 ftpretty
+youtube_dl
+qrcode[pil]
+opencv-python

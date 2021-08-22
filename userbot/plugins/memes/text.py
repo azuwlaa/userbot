@@ -4,16 +4,26 @@ from random import choice, randint
 
 from pyrogram import filters
 from pyrogram.types import Message
+
 from userbot import UserBot
 from userbot.helpers.PyroHelpers import GetUserMentionable
-from userbot.helpers.constants import MEMES, Fs, Weebify
+from userbot.helpers.aiohttp_helper import AioHttp
+from userbot.helpers.constants import Fs, MEMES, Weebify
 from userbot.helpers.utility import get_mock_text
 from userbot.plugins.help import add_command_help
+
+
+@UserBot.on_message(filters.command("lorem", ".") & filters.me)
+async def lorem(_, message: Message):
+    response = await AioHttp().get_text('https://loripsum.net/api/plaintext')
+    print(response)
+    await message.edit(response)
 
 
 @UserBot.on_message(filters.command("nice", ".") & filters.me)
 async def nice(_, message: Message):
     await message.edit("NICENICENICENICE")
+
 
 
 @UserBot.on_message(filters.command("reverse", ".") & filters.me)
@@ -34,8 +44,8 @@ async def cock(_, message: Message):
 async def slap(_, message: Message):
     if message.reply_to_message is None:
         await message.edit(
-                "`WHO SHOULD I SLAP?`"
-            )
+            "`WHO SHOULD I SLAP?`"
+        )
         await asyncio.sleep(5)
         await message.delete()
         return
@@ -228,6 +238,18 @@ async def heads_tails(_, message: Message):
     coin_sides = ["Heads", "Tails"]
     ht = f"Heads or Tails? `{choice(coin_sides)}`"
     await message.edit(ht)
+
+
+@UserBot.on_message(filters.command(["otherwise", 'other'], ".") & filters.me)
+async def youd_think_so_but_this_says_otherwise(_, message: Message):
+    disable_web_page_preview = True
+    if len(message.command) > 1:
+        disable_web_page_preview = False
+
+    await message.edit(
+        f"You\'d think so, but this says <a href='https://i.imgur.com/nzncews.jpg'>otherwise</a>.",
+        disable_web_page_preview=disable_web_page_preview
+    )
 
 
 @UserBot.on_message(filters.command("reverset", ".") & filters.me)

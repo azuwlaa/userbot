@@ -9,6 +9,7 @@ from pyrogram.types import Message
 
 from userbot import UserBot
 from userbot.database import database
+from userbot.helpers.PyroHelpers import ReplyCheck
 
 
 @UserBot.on_message(
@@ -57,15 +58,16 @@ async def evaluation_func(bot: UserBot, message: Message):
     )
 
     if len(final_output) > 4096:
-        with open("eval.text", "w+", encoding="utf8") as out_file:
+        with open("eval.txt", "w", encoding="utf8") as out_file:
             out_file.write(str(final_output))
+
         await message.reply_document(
-            document="eval.txt",
+            "eval.txt",
             caption=cmd,
             disable_notification=True,
-            reply_to_message_id=reply_to_id,
+            reply_to_message_id=ReplyCheck(message),
         )
-        os.remove("eval.text")
+        os.remove("eval.txt")
         await status_message.delete()
     else:
         await status_message.edit(final_output)
@@ -117,7 +119,7 @@ async def execution(_, message: Message):
             document="exec.text",
             caption=cmd,
             disable_notification=True,
-            reply_to_message_id=reply_to_id,
+            reply_to_message_id=ReplyCheck(message),
         )
         os.remove("exec.text")
     else:

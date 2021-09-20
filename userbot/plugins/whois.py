@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from time import sleep
 
@@ -56,15 +57,15 @@ def LastOnline(user: User):
     elif user.status == "online":
         return "Currently Online"
     elif user.status == "offline":
-        return datetime.fromtimestamp(user.status.date).strftime(
+        return datetime.fromtimestamp(user.last_online_date).strftime(
             "%a, %d %b %Y, %H:%M:%S"
         )
 
 
-async def GetCommon(get_user):
-    common = await UserBot.send(
+async def GetCommon(bot: UserBot, get_user):
+    common = await bot.send(
         functions.messages.GetCommonChats(
-            user_id=await UserBot.resolve_peer(get_user), max_id=0, limit=0
+            user_id=await bot.resolve_peer(get_user), max_id=0, limit=0
         )
     )
     return common
@@ -79,7 +80,7 @@ def ProfilePicUpdate(user_pic):
 
 
 @UserBot.on_message(filters.command("whois", [".", ""]) & filters.me)
-async def summon_here(_, message: Message):
+async def who_is(bot: UserBot, message: Message):
     cmd = message.command
     if not message.reply_to_message and len(cmd) == 1:
         get_user = message.from_user.id
@@ -92,17 +93,18 @@ async def summon_here(_, message: Message):
         except ValueError:
             pass
     try:
-        user = await UserBot.get_users(get_user)
+        user = await bot.get_users(get_user)
     except PeerIdInvalid:
         await message.edit("I don't know that User.")
-        sleep(2)
+        await asyncio.sleep(2)
         await message.delete()
         return
-    desc = await UserBot.get_chat(get_user)
-    desc = desc.description
-    user_pic = await UserBot.get_profile_photos(user.id)
-    pic_count = await UserBot.get_profile_photos_count(user.id)
-    common = await GetCommon(user.id)
+
+    user_details = await bot.get_chat(get_user)
+    bio = user_details.bio
+    user_pic = await bot.get_profile_photos(user.id)
+    pic_count = await bot.get_profile_photos_count(user.id)
+    common = await GetCommon(bot, user.id)
 
     if not user.photo:
         await message.edit(
@@ -114,12 +116,12 @@ async def summon_here(_, message: Message):
                 username=user.username if user.username else "",
                 last_online=LastOnline(user),
                 common_groups=len(common.chats),
-                bio=desc if desc else "`No bio set up.`",
+                bio=bio if bio else "`No bio set up.`",
             ),
             disable_web_page_preview=True,
         )
     elif user.photo:
-        await UserBot.send_photo(
+        await bot.send_photo(
             message.chat.id,
             user_pic[0].file_id,
             caption=WHOIS_PIC.format(
@@ -131,12 +133,12 @@ async def summon_here(_, message: Message):
                 last_online=LastOnline(user),
                 profile_pics=pic_count,
                 common_groups=len(common.chats),
-                bio=desc if desc else "`No bio set up.`",
+                bio=bio if bio else "`No bio set up.`",
                 profile_pic_update=ProfilePicUpdate(user_pic),
             ),
             reply_to_message_id=ReplyCheck(message),
-            file_ref=user_pic[0].file_ref,
         )
+
         await message.delete()
 
 

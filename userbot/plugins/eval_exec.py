@@ -16,16 +16,29 @@ from userbot.helpers.PyroHelpers import ReplyCheck
     filters.command("eval", ".")
     & filters.me
     & ~filters.forwarded
-    & ~filters.edited
     & ~filters.via_bot
 )
+async def eval_func_init(bot, message):
+    await evaluation_func(bot, message)
+
+
+@UserBot.on_edited_message(
+    filters.command("eval", ".")
+    & filters.me
+    & ~filters.forwarded
+    & ~filters.via_bot
+)
+async def eval_func_edited(bot, message):
+    await evaluation_func(bot, message)
+
+
 async def evaluation_func(bot: UserBot, message: Message):
     status_message = await message.reply_text("Processing ...")
     cmd = message.text.split(" ", maxsplit=1)[1]
 
-    reply_to_id = message.message_id
+    reply_to_id = message.id
     if message.reply_to_message:
-        reply_to_id = message.reply_to_message.message_id
+        reply_to_id = message.reply_to_message.id
 
     old_stderr = sys.stderr
     old_stdout = sys.stdout
@@ -82,19 +95,32 @@ async def aexec(code, b, m, r, d):
     return await locals()["__aexec"](b, m, r, d)
 
 
+@UserBot.on_edited_message(
+    filters.command("exec", ".")
+    & filters.me
+    & ~filters.forwarded
+    & ~filters.via_bot
+)
+async def execution_func_edited(bot, message):
+    await execution(bot, message)
+
+
 @UserBot.on_message(
     filters.command("exec", ".")
     & filters.me
     & ~filters.forwarded
-    & ~filters.edited
     & ~filters.via_bot
 )
-async def execution(_, message: Message):
+async def execution_func(bot, message):
+    await execution(bot, message)
+
+
+async def execution(bot: UserBot, message: Message):
     cmd = message.text.split(" ", maxsplit=1)[1]
 
-    reply_to_id = message.message_id
+    reply_to_id = message.id
     if message.reply_to_message:
-        reply_to_id = message.reply_to_message.message_id
+        reply_to_id = message.reply_to_message.id
 
     process = await asyncio.create_subprocess_shell(
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE

@@ -3,14 +3,14 @@ import asyncio
 from pyrogram import filters
 from pyrogram.types import Message
 
-from userbot import UserBot, ALLOWED_USERS
+from userbot import ALLOWED_USERS, UserBot
 from userbot.plugins.help import add_command_help
 
 
 @UserBot.on_message(
     filters.command(["l", "lyrics"], ".") & (filters.me | filters.user(ALLOWED_USERS))
 )
-async def send_lyrics(_, message: Message):
+async def send_lyrics(bot: UserBot, message: Message):
     try:
         cmd = message.command
 
@@ -33,29 +33,27 @@ async def send_lyrics(_, message: Message):
 
         try:
             # send to Saved Messages because hide_via doesn't work sometimes
-            saved = await UserBot.send_inline_bot_result(
+            saved = await bot.send_inline_bot_result(
                 chat_id="me",
                 query_id=lyrics_results.query_id,
                 result_id=lyrics_results.results[0].id,
-                hide_via=True,
             )
             await asyncio.sleep(3)
 
             # forward from Saved Messages
-            await UserBot.copy_message(
+            await bot.copy_message(
                 chat_id=message.chat.id,
                 from_chat_id="me",
                 message_id=saved.updates[1].message.id,
             )
 
             # delete the message from Saved Messages
-            await UserBot.delete_messages("me", saved.updates[1].message.id)
+            await bot.delete_messages("me", saved.updates[1].message.id)
         except TimeoutError:
             await message.edit("That didn't work out")
             await asyncio.sleep(2)
         await message.delete()
     except Exception as e:
-        print(e)
         await message.edit("`Failed to find lyrics`")
         await asyncio.sleep(2)
         await message.delete()

@@ -8,7 +8,7 @@ from pyrogram.types import Message
 from userbot.helpers.PyroHelpers import GetChatID
 
 
-CHAT_AUTH = [-1001443655011, -1001216487216]  # add chat ids without quotes
+CHAT_AUTH = []  # add chat ids without quotes
 
 
 @UserBot.on_message(filters.regex(r"(?i)#players:(.*)$"))

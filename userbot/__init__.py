@@ -4,9 +4,7 @@ import os
 from configparser import ConfigParser
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
-
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
 from userbot.userbot import UserBot
 
 # Created logs folder if it is not there. Needed for logging.

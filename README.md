@@ -51,7 +51,27 @@ source venv/bin/activate
 pip install -r requirements.txt
 python -m userbot
 ```
+*Using docker*
+- Save the following content as `docker-compose.yml`
+```yml
+version: '3.5'
+services:
+  userbot:
+    hostname: userbot
+    volumes:
+      - ./config:/root/userbot/config
+    image: ghcr.io/athphane/userbot:latest
 
+```
+- First run:
+```bash
+docker compose run --rm userbot python -m userbot
+```
+- Configure userbot and stop container **CTRL+C**
+- Run the container again de-attached:
+```bash
+docker compose up -d
+```
 ## Spotify integration
 To get the Spotify commands working on the Userbot, you need to get a CLIENT_ID and CLIENT_SECRET
 form the [Spotify Developer Portal]('https://developer.spotify.com/dashboard/applications) and add
@@ -71,6 +91,17 @@ project root of the server that will be running your userbot. This is a one time
 ## Known issues
 * `.restart` command do not work on Termux as [psutils is not supported on Android](https://github.com/giampaolo/psutil/issues/913). \
 CTRL+C, run `git pull` and `python -m userbot` to update bot on termux.
+
+## Star History
+
+<a href="https://star-history.com/#athphane/userbot&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=athphane/userbot&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=athphane/userbot&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=athphane/userbot&type=Date" />
+  </picture>
+</a>
+
 
 ## Credits, and Thanks to
 *  [Dan](https://t.me/haskell) for his [Pyrogram Library](https://github.com/pyrogram/pyrogram)

@@ -4,7 +4,8 @@ venv/
 *.session
 *.session-journal
 __pycache__/
-config/userbot.ini
 unknown_errors.txt
 file_ids.txt
 .cache-*
+.git
+config/*

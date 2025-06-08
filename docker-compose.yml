@@ -1,8 +1,24 @@
-version: '3.5'
 services:
-#########################
   userbot:
+    build:
+      context: .
+      dockerfile: .build/dev.Dockerfile
     hostname: userbot
     volumes:
       - ./:/root/userbot
-    image: ghcr.io/athphane/userbot
+    networks:
+      - userbot
+
+  userbot-mongo:
+    hostname: userbot-mongo
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: userbot
+      MONGO_INITDB_ROOT_PASSWORD: userbot-password
+    networks:
+      - userbot
+
+networks:
+  userbot:
+    external: false

@@ -4,7 +4,7 @@ import re
 import subprocess
 import tempfile
 
-import requests
+import aiohttp
 from pyrogram import filters
 from pyrogram.types import Message, LinkPreviewOptions
 
@@ -17,43 +17,33 @@ instagram_regex = r'https?://(www\.)?(instagram\.com|ddinstagram\.com)/(p|reels|
 # TikTok URL regex pattern - updated to support empty usernames
 tiktok_regex = r'https?://(www\.|vm\.|vt\.)?tiktok\.com/(@[\w.-]*/video/\d+|@/video/\d+|[\w]+/?).*'
 
+# YouTube URL regex pattern - matches all YouTube video formats (shorts, watch, embed, etc.)
+youtube_regex = r'https?://(www\.)?(youtube\.com/(watch\?v=|shorts/|embed/|v/)|youtu\.be/)[a-zA-Z0-9_-]+/?(\?.*)?'
+
+# Facebook URL regex pattern - supports various Facebook video URL formats
+facebook_regex = r'https?://(www\.|m\.|web\.)?facebook\.com/(watch/?\?v=\d+|[\w.-]+/videos/\d+|reel/\d+|share/(v|r)/\d+|[\w.-]+/posts/\d+)/?.*'
+
 # Combined regex for function trigger
-video_url_regex = f"({instagram_regex}|{tiktok_regex})"
+video_url_regex = f"({instagram_regex}|{tiktok_regex}|{youtube_regex}|{facebook_regex})"
 
 
-def get_final_url(url):
-    """Get the final URL by following redirects and cleaning it"""
-    try:
-        # Create a session that follows redirects
-        session = requests.Session()
-
-        # Make HEAD request to get redirect without downloading content
-        response = session.head(url, allow_redirects=True)
-
-        if response.status_code == 200:
-            # Get the final URL after all redirects
-            final_url = response.url
-
-            # Remove tracking parameters (anything after the ?)
-            clean_url = final_url.split('?')[0]
-
-            return clean_url
-
-    except Exception:
-        pass
-
-    # Return original if anything fails
+async def get_final_url(url):
+    timeout = aiohttp.ClientTimeout(total=10)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.head(url, allow_redirects=True) as response:
+            if response.status == 200:
+                return str(response.url)
     return url
 
 
-def process_urls(url):
+async def process_urls(url):
     """Process URLs for both Instagram and TikTok"""
     # First, follow redirects to get the real URL
-    real_url = get_final_url(url)
+    real_url = await get_final_url(url)
 
     # For ddinstagram.com links, always convert to instagram.com
-    if "ddinstagram.com" in real_url:
-        download_url = real_url.replace("ddinstagram.com", "instagram.com")
+    if ("ddinstagram.com" in real_url) or ("kkinstagram.com" in real_url):
+        download_url = real_url.replace("ddinstagram.com", "instagram.com").replace("kkinstagram.com", "instagram.com")
     else:
         download_url = real_url
 
@@ -62,7 +52,7 @@ def process_urls(url):
 @UserBot.on_message(filters.regex(video_url_regex) & filters.me)
 async def video_downloader(bot: UserBot, message: Message, from_reply=False):
     # Extract the video URL from the message
-    message_text = message.text
+    message_text = message.text or message.caption
 
     # Don't download if there is additional content in the message
     if not message_text.startswith("http") and not from_reply:
@@ -75,6 +65,12 @@ async def video_downloader(bot: UserBot, message: Message, from_reply=False):
     elif re.search(tiktok_regex, message_text):
         platform = "TikTok"
         match = re.search(tiktok_regex, message_text)
+    elif re.search(youtube_regex, message_text):
+        platform = "YouTube"
+        match = re.search(youtube_regex, message_text)
+    elif re.search(facebook_regex, message_text):
+        platform = "Facebook"
+        match = re.search(facebook_regex, message_text)
     else:
         return
 
@@ -84,7 +80,7 @@ async def video_downloader(bot: UserBot, message: Message, from_reply=False):
     original_url = match.group(0)
 
     # Process URL to get the download URL and display URL
-    download_url = process_urls(original_url)
+    download_url = await process_urls(original_url)
 
     # Send a new status message (silently and without preview)
     status_msg = await bot.send_message(
@@ -143,6 +139,8 @@ async def video_downloader(bot: UserBot, message: Message, from_reply=False):
                         f"❌ Download failed. Error: {process.stderr[:500]}...",
                         link_preview_options=LinkPreviewOptions(is_disabled=True)  # Disable link preview
                     )
+                    await asyncio.sleep(5)
+                    await status_msg.delete()
                     return
 
             # Get the downloaded file
@@ -152,6 +150,8 @@ async def video_downloader(bot: UserBot, message: Message, from_reply=False):
                     "❌ No files downloaded.",
                     link_preview_options=LinkPreviewOptions(is_disabled=True)  # Disable link preview
                 )
+                await asyncio.sleep(5)
+                await status_msg.delete()
                 return
 
             video_path = os.path.join(temp_dir, downloaded_files[0])
@@ -178,7 +178,8 @@ async def video_downloader(bot: UserBot, message: Message, from_reply=False):
             await bot.send_video(
                 message.chat.id,
                 video_path,
-                caption=caption
+                caption=caption,
+                reply_to_message_id=message.id if from_reply else None
             )
             
             if not from_reply: await message.delete()
@@ -196,13 +197,16 @@ async def video_downloader(bot: UserBot, message: Message, from_reply=False):
 
 @UserBot.on_message(filters.command("dl", ".") & filters.me)
 async def download_video_command(bot: UserBot, message: Message):
-    """Download the video from the link sent in the message."""
-    if not message.reply_to_message or not message.reply_to_message.text:
+    if not message.reply_to_message:
+        await message.edit_text("Please reply to a message.")
+        return
+
+    if message.reply_to_message and not (message.reply_to_message.text or message.reply_to_message.caption):
         await message.edit_text("Please reply to a message containing a video link.")
         return
 
     # Extract the link from the replied message
-    reply_text = message.reply_to_message.text.strip()
+    reply_text = message.reply_to_message.text or message.reply_to_message.caption
     
     # Check if it matches the video URL regex
     if not re.search(video_url_regex, reply_text):
@@ -224,6 +228,14 @@ add_command_help(
         [
             "https://tiktok.com/... or https://vt.tiktok.com/...",
             "Automatically downloads TikTok videos when you send a link and uploads them with the original caption and link.",
+        ],
+        [
+            "https://youtube.com/watch?v=... or https://youtube.com/shorts/... or https://youtu.be/...",
+            "Automatically downloads YouTube videos (all formats including regular videos and shorts) when you send a link and uploads them with the title and link.",
+        ],
+        [
+            "https://facebook.com/watch?v=... or https://facebook.com/.../videos/...",
+            "Automatically downloads Facebook videos when you send a link and uploads them with the title and link.",
         ],
         [
             ".dl",
